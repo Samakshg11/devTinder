@@ -1,38 +1,27 @@
 const express = require("express");
-// const { adminauth ,userauth} = require("./middlewares/auth");
-
+const connectDB = require("./config/database");
 const app =express();
-
-// app.use("/admin",adminauth);
-// app.use("/user",userauth);
-
-
-app.use("/",(err,req,res,next)=>{
-    if(err){
-        res.status(500).send("Internal Server Error");
+const User= require("./models/user");
+app.use(express.json());
+app.post("/signup", async(req,res)=>{
+    const user = new User(req.body);
+    console.log("User data received:", req.body);
+    try{
+    await user.save();
+    res.send("User created successfully");
+    }
+    catch(err){
+        res.status(400).send("Error creating user"  + err.message);
     }
 });
-app.get("/user/getuserdata",(req,res) => {
-    // try{
-    throw new Error("This is an error in getuserdata route");
-    res.send("This is the user data");
-// }
-// catch(err){
-//     res.status(500).send("external Server Error");
-// }
-});
-// app.get("/admin/getdata",(req,res)=>{
-//     res.send("This is the admin data");
-// });
 
-// app.post("/user/login",(req,res)=>{
-//     res.send("The user has logged in");
-// });
-app.use("/user",(err,req,res,next)=>{
-    if(err){
-        res.status(500).send("external  Server Error");
-    }
+connectDB().then(()=>{
+    console.log("Database connected successfully");
+    app.listen(3000,()=>{
+        console.log("The server is successfully listening");
+    });
+})
+.catch((err)=>{
+    console.log("Database connection failed");
 });
-app.listen(3000,()=>{
-    console.log("The server is successfully listening")
-;});
+
