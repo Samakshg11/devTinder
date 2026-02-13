@@ -19,7 +19,7 @@ app.post("/signup", async(req,res)=>{
 app.get("/user", async (req,res)=>{
     const userEmail = req.body.emailId;
 try{
-    const users = await User.findOne({emailId: userEmail});
+    const users = await User.findOne ({emailId: userEmail});
     if(users.length === 0){
         res.status(404).send("User not found");
     }
@@ -41,6 +41,36 @@ app.get("/feed", async (req,res)=>{
         res.status(400).send("Error fetching user");
     };
 });
+
+app.delete("/user", async(req,res) =>{
+    const userId = req.body.userId;
+    try{
+    const users = await User.findByIdAndDelete(userId);
+    if(!users){
+        res.status(404).send("User not found");
+    }
+    else{
+        res.send("User deleted successfully");
+    }
+    }catch(err){
+        res.status(400).send("Error deleting user");
+    }
+})
+
+app.patch("/user", async(req,res)=>{
+    const userId = req.body.userId;
+    const updateData = req.body;
+    try{
+        await User.findByIdAndUpdate({_id:userId},updateData,{runValidators:true});
+        res.send("User updated successfully");
+    }
+    catch(err){
+        res.status(400).send("Error updating user");
+    }
+});
+
+
+
 connectDB().then(()=>{
     console.log("Database connected successfully");
     app.listen(3000,()=>{
