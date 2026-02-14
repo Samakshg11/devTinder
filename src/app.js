@@ -3,12 +3,19 @@ const connectDB = require("./config/database");
 const app =express();
 const User= require("./models/user");
 app.use(express.json());
+
 app.post("/signup", async(req,res)=>{
     const user = new User(req.body);
     console.log("User data received:", req.body);
     try{
-    await user.save();
-    res.send("User created successfully");
+        const existingUser = await User.findOne({ emailId: user.emailId });
+        if(existingUser){
+            res.status(400).send("User with this email already exists");
+        }
+        else{
+            await user.save();
+            res.send("User created successfully");
+        }
     }
     catch(err){
         res.status(400).send("Error creating user"  + err.message);
@@ -31,7 +38,6 @@ catch(err){
     res.status(400).send("Error fetching user");
 }
 });
-
 //GET users by feed API by getting all the users from the database
 app.get("/feed", async (req,res)=>{
     try{
@@ -41,7 +47,6 @@ app.get("/feed", async (req,res)=>{
         res.status(400).send("Error fetching user");
     };
 });
-
 app.delete("/user", async(req,res) =>{
     const userId = req.body.userId;
     try{
@@ -56,16 +61,31 @@ app.delete("/user", async(req,res) =>{
         res.status(400).send("Error deleting user");
     }
 })
-
-app.patch("/user", async(req,res)=>{
-    const userId = req.body.userId;
+app.patch("/user/:userId", async(req,res)=>{
+    const userId = req.params?.userId;
     const updateData = req.body;
     try{
-        await User.findByIdAndUpdate({_id:userId},updateData,{runValidators:true});
+        const ALLOWED_UPDATES =[
+            "photoUrl",
+            "about",
+            "gender",
+            "skills"
+        ];
+            const isValidUpdate = Object.keys(updateData).every((update) => ALLOWED_UPDATES.includes(update));
+            if(!isValidUpdate){
+                throw new Error("Invalid user update");
+            }
+            if(updateData.skills.length > 5){
+                throw new Error("Skills cannot be more than 5");
+            }
+        const user = await User.findByIdAndUpdate({_id:userId},updateData,{
+            returnDocument:"after",runValidators:true});
+            console.log(user);
         res.send("User updated successfully");
     }
+    
     catch(err){
-        res.status(400).send("Error updating user");
+        res.status(400).send("Error updating user"+ err.message);
     }
 });
 
