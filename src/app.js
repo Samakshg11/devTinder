@@ -89,8 +89,6 @@ app.patch("/user/:userId", async(req,res)=>{
     }
 });
 
-
-
 connectDB().then(()=>{
     console.log("Database connected successfully");
     app.listen(3000,()=>{
