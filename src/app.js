@@ -2,21 +2,29 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app =express();
 const User= require("./models/user");
+const {validateSignupData} = require("./utils/validation");
+const bcrypt = require("bcrypt");
 app.use(express.json());
 
 app.post("/signup", async(req,res)=>{
-    const user = new User(req.body);
-    console.log("User data received:", req.body);
-    try{
-        const existingUser = await User.findOne({ emailId: user.emailId });
-        if(existingUser){
-            res.status(400).send("User with this email already exists");
-        }
-        else{
+try{
+    //validation of data
+    validateSignupData(req);
+    const {firstName,lastName,emailId,password} = req.body;
+    //encrypt the password
+    const passswordHash = await bcrypt.hash(password,10);
+    console.log(passswordHash);
+
+
+    const user = new User({
+        firstName,
+        lastName,
+        emailId,
+        password: passswordHash,
+    });
             await user.save();
             res.send("User created successfully");
         }
-    }
     catch(err){
         res.status(400).send("Error creating user"  + err.message);
     }
