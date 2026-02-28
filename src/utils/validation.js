@@ -9,7 +9,9 @@ const validateSignupData = (req) => {
         throw new Error("Invalid email format");
     }
     else if(!validator.isStrongPassword(password)){
-        throw new Error( "Password must be at least 8 characters long and contain a mix of uppercase, lowercase, numbers, and symbols");
+        throw new Error( "Please enter a strong password!");
     }
 }
-module.exports = {validateSignupData};
+module.exports = {
+    validateSignupData
+};

@@ -26,7 +26,29 @@ try{
             res.send("User created successfully");
         }
     catch(err){
-        res.status(400).send("Error creating user"  + err.message);
+        res.status(400).send("Error : "  + err.message);
+    }
+});
+
+//POST api for login
+
+app.post("/login", async(req,res)=>{
+    try{
+        const {emailId,password} = req.body;
+        const user = await User.findOne({emailId: emailId});
+        if(!user){
+            throw new Error("Invalid credentials");
+        }
+        const isPasswordValid = await bcrypt.compare(password,user.password);
+        if(isPasswordValid){
+            res.send("Login successful!!!");
+        }
+        else{
+            throw new Error("Invalid credentials");
+        }
+    }
+    catch(err){
+        res.status(400).send("Error : " + err.message);
     }
 });
 //GET user by email
@@ -37,7 +59,7 @@ try{
     const users = await User.findOne ({emailId: userEmail});
     if(users.length === 0){
         res.status(404).send("User not found");
-    }
+    } 
     else{
         res.send(users);
     }
