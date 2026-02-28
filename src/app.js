@@ -4,7 +4,11 @@ const app =express();
 const User= require("./models/user");
 const {validateSignupData} = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const { validator } = require("validator");
+const jwt = require("jsonwebtoken");
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async(req,res)=>{
 try{
@@ -41,6 +45,8 @@ app.post("/login", async(req,res)=>{
         }
         const isPasswordValid = await bcrypt.compare(password,user.password);
         if(isPasswordValid){
+            const token = await jwt.sign({_id:user._id},"DEV@Tinder2005");
+            res.cookie("token",token);
             res.send("Login successful!!!");
         }
         else{
@@ -68,6 +74,26 @@ catch(err){
     res.status(400).send("Error fetching user");
 }
 });
+
+app.get("/profile", async (req,res)=>{
+try{
+    const cookies = req.cookies;
+    const {token} = cookies;
+    if(!token){
+        throw new Error("Unauthorized");
+    }
+    const decodedToken = jwt.verify(token,"DEV@Tinder2005");
+    const{_id}= decodedToken;
+    const user = await User.findById(_id);
+    if(!user){
+        throw new Error("User not found");
+    }
+    res.send(user);
+}catch(err){
+    res.status(400).send("Error fetching user profile");
+}
+});
+
 //GET users by feed API by getting all the users from the database
 app.get("/feed", async (req,res)=>{
     try{
