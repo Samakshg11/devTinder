@@ -5,8 +5,6 @@ const User= require("./models/user");
 const {validateSignupData} = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
-const { validator } = require("validator");
-const jwt = require("jsonwebtoken");
 const {userauth} = require("./middlewares/auth");
 
 
@@ -46,9 +44,9 @@ app.post("/login", async(req,res)=>{
         if(!user){
             throw new Error("Invalid credentials");
         }
-        const isPasswordValid = await bcrypt.compare(password,user.password);
+        const isPasswordValid = await user.comparePassword(password);
         if(isPasswordValid){
-            const token = await jwt.sign({_id:user._id},"DEV@Tinder2005",{expiresIn:"1d"});
+            const token = await user.getJWT();
             res.cookie("token",token,{expiresIn: "1d"});
             res.send("Login successful!!!");
         }
@@ -86,4 +84,3 @@ connectDB().then(()=>{
 .catch((err)=>{
     console.log("Database connection failed");
 });
-
