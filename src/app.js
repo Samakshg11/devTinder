@@ -46,7 +46,9 @@ app.post("/login", async(req,res)=>{
         }
         const isPasswordValid = await user.comparePassword(password);
         if(isPasswordValid){
+
             const token = await user.getJWT();
+            
             res.cookie("token",token,{expiresIn: "1d"});
             res.send("Login successful!!!");
         }
