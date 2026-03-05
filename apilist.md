@@ -11,8 +11,8 @@ PATCH /profile/edit
 PATCH /profile/password
 
 ## connectionRequestRouter:
-POST /request/intrested/:userId
-POST /request/ignored/:userId
+POST /request/status/:userId
+
 POST /request/review/accepted/:requestId
 POST /request/review/rejected/:requestId
 
