@@ -40,12 +40,12 @@ requestRouter.post("/request/send/:status/:toUserId", userauth, async(req,res)=>
         });
         const data = await connectionRequest.save();
         res.json({
-            message: "Connection request sent successfully",
+            message :req.user.firstName + " has " + status + " " + toUser.firstName,
             data
         })
     }
     catch(err){
-        res.status(400).send("Error sending connection request");
+        res.status(400).send(err.message);
     }
 });
 
