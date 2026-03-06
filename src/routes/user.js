@@ -31,10 +31,16 @@ userRouter.get("/user/connections",userauth, async(req,res)=>{
                 {toUserId:loggedInuser._id, status:"accepted"},
                 {fromUserId:loggedInuser._id, status:"accepted"},
             ]
-        }).populate("fromUserId",USER_SAFE_DATA)
+        }).populate("fromUserId",USER_SAFE_DATA).populate("toUserId",USER_SAFE_DATA);
+        const data = connectionRequests.map((row)=>{
+            if(row.fromUserId._id.toString() ===loggedInuser._id.toString()){
+                return row.toUserId;
+            }
+            return row.fromUserId});
+        
         res.json({
             message:"Connections",
-            data:connectionRequests,
+            data,
         })
     }
     catch(err){
