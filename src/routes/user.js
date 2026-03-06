@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const userRouter = express.Router();
 const ConnectionRequest = require("../models/connectionRequest");
 
+const USER_SAFE_DATA = "firstName lastName age photoUrl skills about";
+
 userRouter.get("/user/requests/recieved",userauth, async(req,res)=>{
     try{
         const loggedInuser = req.user;
@@ -13,6 +15,25 @@ userRouter.get("/user/requests/recieved",userauth, async(req,res)=>{
         }).populate("fromUserId","firstName lastName age photoUrl");
         res.json({
             message:"Connection requests recieved",
+            data:connectionRequests,
+        })
+    }
+    catch(err){
+        res.status(400).send("Error : "+err.message);
+    }
+});
+
+userRouter.get("/user/connections",userauth, async(req,res)=>{
+    try{
+        const loggedInuser = req.user;
+        const connectionRequests = await ConnectionRequest.find({
+            $or:[
+                {toUserId:loggedInuser._id, status:"accepted"},
+                {fromUserId:loggedInuser._id, status:"accepted"},
+            ]
+        }).populate("fromUserId",USER_SAFE_DATA)
+        res.json({
+            message:"Connections",
             data:connectionRequests,
         })
     }

@@ -17,8 +17,8 @@ POST /request/review/:stauts/:requestId
 
 
 ## userRouter:
+GET /user/requests/received
 GET /user/Connections
-GET /user/requests
 GET /user/feed -gets u profile of other users
 
 
