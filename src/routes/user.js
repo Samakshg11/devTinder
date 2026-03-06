@@ -19,6 +19,7 @@ userRouter.get("/user/requests/recieved",userauth, async(req,res)=>{
     catch(err){
         res.status(400).send("Error : "+err.message);
     }
-})
+});
+
 
 module.exports = userRouter;
