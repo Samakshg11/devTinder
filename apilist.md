@@ -13,8 +13,8 @@ PATCH /profile/password
 ## connectionRequestRouter:
 POST /request/status/:userId
 
-POST /request/review/accepted/:requestId
-POST /request/review/rejected/:requestId
+POST /request/review/:stauts/:requestId
+
 
 ## userRouter:
 GET /user/Connections
