@@ -3,6 +3,7 @@ const {userauth} = require("../middlewares/auth");
 const mongoose = require("mongoose");
 const userRouter = express.Router();
 const ConnectionRequest = require("../models/connectionRequest");
+const User = require("../models/user");
 
 const USER_SAFE_DATA = "firstName lastName age photoUrl skills about";
 
@@ -48,5 +49,33 @@ userRouter.get("/user/connections",userauth, async(req,res)=>{
     }
 });
 
+userRouter.get("/feed",userauth ,async(req,res)=>{
+    try{
+        const loggedInuser = req.user;
+        const connectionrequests = await ConnectionRequest.find({
+            $or:[
+                {toUserId:loggedInuser._id},
+                {fromUserId:loggedInuser._id}
+            ],
+        }).select("fromUserId toUserId");
+
+        const hideUsers = new Set();
+        connectionrequests.forEach(req=>{
+            hideUsers.add(req.fromUserId.toString());
+            hideUsers.add(req.toUserId.toString());
+        })
+        const users = await User.find({
+            $and:[
+                {_id:{$ne:loggedInuser._id}},
+                {_id:{$nin:Array.from(hideUsers)}}
+            ]
+        }).select(USER_SAFE_DATA);
+
+        res.send(users);
+    }
+    catch(err){
+        res.status(400).send("Error : "+err.message);
+    }
+})
 
 module.exports = userRouter;
