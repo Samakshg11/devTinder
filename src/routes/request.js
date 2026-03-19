@@ -76,7 +76,7 @@ requestRouter.post ("/request/view/:status/:requestId", userauth, async(req,res)
             data
         })
     }
-    catch(err){
+    catch(err){ 
         res.status(400).send("Error: "+err.message);
     }
 });
