@@ -23,34 +23,44 @@ requestRouter.post("/request/send/:status/:toUserId", userauth, async(req,res)=>
                 message: "User not found"
             });
         }
+
         const existingConnectionRequest = await ConnectionRequest.findOne({
-            $or:[
-            {fromUserId,toUserId},
-            {fromUserId:toUserId, toUserId:fromUserId}
-            ]
+            fromUserId,
+            toUserId
         });
+
+        let data;
+
         if(existingConnectionRequest){
-            return res.status(400).send("Connection request already exists between these users");
+            existingConnectionRequest.status = status;
+            data = await existingConnectionRequest.save();
+        } else {
+            const connectionRequest = new ConnectionRequest({
+                fromUserId,
+                toUserId,
+                status,
+            });
+            data = await connectionRequest.save();
         }
 
+        // ✅ EMAIL (ab har case me chalega)
+        try {
+            const emailRes = await sendEmail.run();
+            console.log("Email response:", emailRes);
+        } catch (err) {
+            console.log("Email error:", err.message);
+        }
 
-        const connectionRequest = new ConnectionRequest({
-            fromUserId,
-            toUserId,
-            status,
-        });
-        const data = await connectionRequest.save();
         res.json({
             message :req.user.firstName + " has " + status + " " + toUser.firstName,
             data
-        })
-    }
-    catch(err){
+        });
+
+    } catch(err){
+        console.log("ERROR:", err);
         res.status(400).send(err.message);
     }
 });
-
-
 requestRouter.post ("/request/view/:status/:requestId", userauth, async(req,res)=>{
     try{
         const loggedInuser = req.user;
@@ -62,7 +72,7 @@ requestRouter.post ("/request/view/:status/:requestId", userauth, async(req,res)
         }
         const connectionRequest = await ConnectionRequest.findById({
             _id:requestId,
-            toUserID:loggedInuser._id,
+            toUserId:loggedInuser._id,
             status:"interested",
         });
         if(!connectionRequest){
