@@ -1,8 +1,5 @@
 
 
-console.log("ACCESS KEY:", process.env.AWS_ACCESS_KEY_ID);
-console.log("SECRET KEY:", process.env.AWS_SECRET_ACCESS_KEY);
-
 const { SESClient } = require("@aws-sdk/client-ses");
 
 const REGION = "ap-south-1";
