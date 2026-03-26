@@ -33,8 +33,8 @@ const createSendEmailCommand = (toAddress, fromAddress) => {
 
 const run = async () => {
   const sendEmailCommand = createSendEmailCommand(
-    "samakshgarg2005@gmail.com",
     "gargsamaksh108@gmail.com",
+    "samaksh@devtinder.site",
   );
 
   try {
@@ -48,4 +48,4 @@ const run = async () => {
   }
 };
 
-export { run };
+module.exports = { run };

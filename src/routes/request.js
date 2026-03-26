@@ -4,7 +4,7 @@ const {userauth} = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 const mongoose = require("mongoose");
-
+const { run } = require("../utils/sendEmail");
 
 requestRouter.post("/request/send/:status/:toUserId", userauth, async(req,res)=>{
     try{
