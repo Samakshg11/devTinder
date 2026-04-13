@@ -70,7 +70,7 @@ requestRouter.post ("/request/view/:status/:requestId", userauth, async(req,res)
         if(!allowedStatus.includes(status)){
             return res.status(400).send("Invalid status value.." + status);
         }
-        const connectionRequest = await ConnectionRequest.findById({
+        const connectionRequest = await ConnectionRequest.findOne({
             _id:requestId,
             toUserId:loggedInuser._id,
             status:"interested",
