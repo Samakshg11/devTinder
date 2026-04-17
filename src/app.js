@@ -15,7 +15,7 @@ const initializeSocket = require("./utils/socket");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 app.use(cors({
-    origin: ["http://localhost:5173", "https://devtinder.site"],
+    origin: ["http://localhost:5173", "http://localhost", "https://devtinder.site"],
     credentials: true,
 }));
 app.use(express.json());
@@ -37,5 +37,5 @@ connectDB().then(()=>{
     });
 })
 .catch((err)=>{
-    console.log("Database connection failed");
+    console.error("Database connection failed:", err.message);
 });
