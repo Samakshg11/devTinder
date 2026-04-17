@@ -15,7 +15,7 @@ const initializeSocket = require("./utils/socket");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost", "https://devtinder.site"],
+    origin: ["http://localhost:5173", "http://localhost", "https://devtinder.site", "http://devtinder.site"],
     credentials: true,
 }));
 app.use(express.json());
