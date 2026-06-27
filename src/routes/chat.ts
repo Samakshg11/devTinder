@@ -1,10 +1,14 @@
-const express = require("express");
-const { userauth } = require("../middlewares/auth");
-const Chat = require("../models/chat");
-const chatRouter = express.Router();
+import express, { Request, Response, Router } from "express";
+import { userauth } from "../middlewares/auth";
+import Chat from "../models/chat";
 
-chatRouter.get("/chat/:targetUserId", userauth, async (req, res) => {
+const chatRouter: Router = express.Router();
+
+chatRouter.get("/chat/:targetUserId", userauth, async (req: Request, res: Response): Promise<any> => {
     const { targetUserId } = req.params;
+    if (!req.user) {
+        return res.status(401).send("Unauthorized");
+    }
     const userId = req.user._id;
 
     try {
@@ -30,9 +34,9 @@ chatRouter.get("/chat/:targetUserId", userauth, async (req, res) => {
         }
 
         res.json(chat);
-    } catch (err) {
+    } catch (err: any) {
         res.status(400).send("Error fetching chat: " + err.message);
     }
 });
 
-module.exports = chatRouter;
+export default chatRouter;

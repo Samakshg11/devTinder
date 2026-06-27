@@ -1,10 +1,10 @@
-const { SendEmailCommand } =require ("@aws-sdk/client-ses");
-const { sesClient } =require ("./sesClient.js");
-const createSendEmailCommand = (toAddress, fromAddress) => {
+import { SendEmailCommand } from "@aws-sdk/client-ses";
+import { sesClient } from "./sesClient";
+
+const createSendEmailCommand = (toAddress: string, fromAddress: string): SendEmailCommand => {
   return new SendEmailCommand({
     Destination: {
-      CcAddresses: [
-      ],
+      CcAddresses: [],
       ToAddresses: [
         toAddress,
       ],
@@ -26,12 +26,11 @@ const createSendEmailCommand = (toAddress, fromAddress) => {
       },
     },
     Source: fromAddress,
-    ReplyToAddresses: [
-    ],
+    ReplyToAddresses: [],
   });
 };
 
-const run = async () => {
+export const run = async (): Promise<any> => {
   const sendEmailCommand = createSendEmailCommand(
     "gargsamaksh108@gmail.com",
     "samaksh@devtinder.site",
@@ -41,11 +40,8 @@ const run = async () => {
     return await sesClient.send(sendEmailCommand);
   } catch (caught) {
     if (caught instanceof Error && caught.name === "MessageRejected") {
-      const messageRejectedError = caught;
-      return messageRejectedError;
+      return caught;
     }
     throw caught;
   }
 };
-
-module.exports = { run };
